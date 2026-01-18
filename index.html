@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6-Н класс | Наш дружный класс</title>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Neucha&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --paper-color: #f5f5dc;
+            --grid-color: #a8d5f5;
+            --red-margin: #e57373;
+            --tape-color: rgba(255, 235, 180, 0.85);
+            --tape-shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Neucha', cursive;
+            background-color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        /* Тетрадный фон в клетку */
+        .notebook-bg {
+            background-color: var(--paper-color);
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px),
+                linear-gradient(var(--red-margin) 2px, transparent 2px);
+            background-size: 
+                20px 20px,
+                20px 20px,
+                100% 100%;
+            background-position: 
+                0 0,
+                0 0,
+                80px 0;
+            position: relative;
+        }
+
+        /* Красная линия поля */
+        .notebook-bg::before {
+            content: '';
+            position: fixed;
+            left: 80px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--red-margin);
+            z-index: 100;
+        }
+
+        /* Дырки от спирали */
+        .spiral-holes {
+            position: fixed;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 40px;
+            z-index: 101;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            padding-top: 30px;
+        }
+
+        .spiral-hole {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #e8e8e8;
+            box-shadow: inset 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Шапка сайта */
+        header {
+            padding: 40px 100px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header-title {
+            font-family: 'Caveat', cursive;
+            font-size: 4rem;
+            color: #2c5282;
+            text-shadow: 2px 2px 0 #fff;
+            transform: rotate(-2deg);
+            display: inline-block;
+        }
+
+        .header-subtitle {
+            font-size: 1.5rem;
+            color: #4a5568;
+            margin-top: 10px;
+        }
+
+        /* Эффект малярного скотча */
+        .tape {
+            position: absolute;
+            width: 80px;
+            height: 30px;
+            background: var(--tape-color);
+            box-shadow: 1px 1px 3px var(--tape-shadow);
+            z-index: 10;
+        }
+
+        .tape::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 2px,
+                rgba(255,255,255,0.3) 2px,
+                rgba(255,255,255,0.3) 4px
+            );
+        }
+
+        .tape-left {
+            transform: rotate(-35deg);
+        }
+
+        .tape-right {
+            transform: rotate(35deg);
+        }
+
+        .tape-horizontal {
+            transform: rotate(-5deg);
+        }
+
+        /* Навигация */
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px 100px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            font-family: 'Neucha', cursive;
+            font-size: 1.3rem;
+            padding: 15px 30px;
+            background: #fff;
+            border: 3px solid #2c5282;
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+            box-shadow: 3px 3px 0 #2c5282;
+        }
+
+        .nav-btn:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0 #2c5282;
+            background: #e8f4f8;
+        }
+
+        .nav-btn.active {
+            background: #2c5282;
+            color: white;
+        }
+
+        /* Основной контент */
+        main {
+            padding: 40px 100px;
+            min-height: 60vh;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-family: 'Caveat', cursive;
+            font-size: 2.5rem;
+            color: #2c5282;
+            margin-bottom: 30px;
+            padding-left: 20px;
+            border-left: 5px solid var(--red-margin);
+        }
+
+        /* Стиль Полароид для фото */
+        .polaroid-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .polaroid {
+            background: white;
+            padding: 15px 15px 50px 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transform: rotate(var(--rotation, 0deg));
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .polaroid:hover {
+            transform: rotate(0deg) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        .polaroid img {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            filter: sepia(10%) contrast(105%);
+        }
+
+        .polaroid-caption {
+            position: absolute;
+            bottom: 10px;
+            left: 15px;
+            right: 15px;
+            font-family: 'Caveat', cursive;
+            font-size: 1.2rem;
+            color: #333;
+            text-align: center;
+        }
+
+        .polaroid .tape {
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%) rotate(var(--tape-rot, 0deg));
+        }
+
+        /* Карточки учеников */
+        .student-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 3px 3px 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .student-card .tape {
+            top: -10px;
+            right: 20px;
+        }
+
+        /* Музыка и Видео секции */
+        .media-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .media-container .tape {
+            top: -12px;
+            left: 30px;
+        }
+
+        .playlist {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .track {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #2c5282;
+            transition: all 0.3s;
+        }
+
+        .track:hover {
+            background: #e8f4f8;
+            transform: translateX(10px);
+        }
+
+        .track-icon {
+            font-size: 2rem;
+        }
+
+        .track-info h4 {
+            color: #2c5282;
+            margin-bottom: 5px;
+        }
+
+        .track audio {
+            margin-top: 10px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        /* Видео галерея */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .video-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.15);
+            position: relative;
+        }
+
+        .video-card .tape {
+            top: -10px;
+            right: 20px;
+            z-index: 5;
+        }
+
+        .video-card video,
+        .video-card iframe {
+            width: 100%;
+            aspect-ratio: 16/9;
+            display: block;
+        }
+
+        .video-caption {
+            padding: 15px;
+            font-family: 'Caveat', cursive;
+            font-size: 1.4rem;
+            text-align: center;
+            color: #2c5282;
+        }
+
+        /* Главная страница */
+        .welcome-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .welcome-text {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 4px 4px 10px rgba(0,0,0,0.1);
+            position: relative;
+            font-size: 1.3rem;
+            line-height: 1.8;
+        }
+
+        .class-stats {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 4px 4px 10px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .class-stats .tape {
+            top: -12px;
+            left: 40px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            font-size: 1.2rem;
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-number {
+            font-family: 'Caveat', cursive;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        /* Стикеры-украшения */
+        .sticker {
+            position: absolute;
+            font-size: 3rem;
+            opacity: 0.8;
+            transform: rotate(var(--rotation, 0deg));
+        }
+
+        /* Расписание */
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 4px 4px 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .schedule-table th,
+        .schedule-table td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+
+        .schedule-table th {
+            background: #2c5282;
+            color: white;
+            font-family: 'Caveat', cursive;
+            font-size: 1.4rem;
+        }
+
+        .schedule-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .schedule-table tr:hover {
+            background: #e8f4f8;
+        }
+
+        /* Футер */
+        footer {
+            text-align: center;
+            padding: 40px 100px;
+            border-top: 2px dashed #2c5282;
+            margin-top: 40px;
+        }
+
+        .footer-text {
+            font-family: 'Caveat', cursive;
+            font-size: 1.5rem;
+            color: #4a5568;
+        }
+
+        /* Анимированные элементы */
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .notebook-bg::before {
+                left: 20px;
+            }
+
+            header, nav, main, footer {
+                padding-left: 40px;
+                padding-right: 20px;
+            }
+
+            .spiral-holes {
+                display: none;
+            }
+
+            .header-title {
+                font-size: 2.5rem;
+            }
+
+            .welcome-content {
+                grid-template-columns: 1fr;
+            }
+
+            .polaroid img {
+                width: 150px;
+                height: 150px;
+            }
+        }
+
+        /* Заметки-стикеры */
+        .sticky-note {
+            background: #fff59d;
+            padding: 20px;
+            box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
+            position: relative;
+            transform: rotate(-2deg);
+            font-family: 'Caveat', cursive;
+            font-size: 1.3rem;
+        }
+
+        .sticky-note.pink {
+            background: #f8bbd9;
+        }
+
+        .sticky-note.blue {
+            background: #b3e5fc;
+        }
+
+        .sticky-note.green {
+            background: #c8e6c9;
+        }
+
+        /* Книжка-разворот */
+        .notebook-divider {
+            display: flex;
+            justify-content: center;
+            margin: 40px 0;
+        }
+
+        .notebook-divider span {
+            font-family: 'Caveat', cursive;
+            font-size: 2rem;
+            color: #2c5282;
+            padding: 0 20px;
+            position: relative;
+        }
+
+        .notebook-divider span::before,
+        .notebook-divider span::after {
+            content: '✿';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .notebook-divider span::before { left: -20px; }
+        .notebook-divider span::after { right: -20px; }
+
+        /* Бейджик классного руководителя */
+        .teacher-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px 30px;
+            border-radius: 50px;
+            box-shadow: 4px 4px 10px rgba(0,0,0,0.15);
+            margin: 20px 0;
+        }
+
+        .teacher-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+        .teacher-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+        .teacher-info h4 {
+            font-family: 'Caveat', cursive;
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .teacher-info p {
+            color: #666;
+        }
+    </style>
+</head>
+<body class="notebook-bg">
+    <!-- Дырки от спирали -->
+    <div class="spiral-holes">
+        <div class="spiral-hole"></div>
+        <div class="spiral-hole"></div>
+        <div class="spiral-hole"></div>
+        <div class="spiral-hole"></div>
+        <div class="spiral-hole"></div>
+        <div class="spiral-hole"></div>
+        <div class="spiral-hole"></div>
+        <div class="spiral-hole"></div>
+        <div class="spiral-hole"></div>
+        <div class="spiral-hole"></div>
+        <div class="spiral-hole"></div>
+        <div class="spiral-hole"></div>
+        <div class="spiral-hole"></div>
+        <div class="spiral-hole"></div>
+        <div class="spiral-hole"></div>
+    </div>
+
+    <!-- Шапка -->
+    <header>
+        <div class="tape tape-left" style="top: 20px; left: 120px;"></div>
+        <div class="tape tape-right" style="top: 20px; right: 120px;"></div>
+        
+        <h1 class="header-title"> 6-Н класс </h1>
+        <p class="header-subtitle">Школа 1 МОК | 2025-2026 учебный год</p>
+        
+        <div class="teacher-badge">
+            <div class="teacher-avatar">
+    <img src="teacher.PNG" alt="Александр Николаевич">
+</div>
+            <div class="teacher-info">
+                <h4>Александр Николаевич</h4>
+                <p>Классный руководитель</p>
+            </div>
+        </div>
+        
+        <span class="sticker" style="--rotation: 15deg; top: 10px; right: 200px;">⭐</span>
+        <span class="sticker floating" style="--rotation: -10deg; bottom: 20px; left: 150px;">🎒</span>
+    </header>
+
+    <!-- Навигация -->
+    <nav>
+        <button class="nav-btn active" data-page="home">🏠 Главная</button>
+        <button class="nav-btn" data-page="photos">📷 Фотографии</button>
+        <button class="nav-btn" data-page="music">🎵 Музыка</button>
+        <button class="nav-btn" data-page="video">🎬 Видео</button>
+        <button class="nav-btn" data-page="schedule">📅 Расписание</button>
+    </nav>
+
+    <!-- Основной контент -->
+    <main>
+        <!-- Главная страница -->
+        <section class="page active" id="home">
+            <h2 class="section-title">Добро пожаловать!</h2>
+            
+            <div class="welcome-content">
+                <div class="welcome-text">
+                    <div class="tape tape-horizontal" style="top: -10px; left: 30px;"></div>
+                    <p>
+                        👋 Привет! Мы 6-Н класс 1 МОК! 
+                    </p>
+                    <br>
+                    <p>
+                        На нашем сайте ты найдёшь фотографии с наших мероприятий, 
+                        любимую музыку класса, видео с праздников и много всего интересного!
+                    </p>
+                    <br>
+                    <p>
+                        🌟 Наш девиз: <strong>"Вместе мы - сила!"</strong>
+                    </p>
+                </div>
+                
+                <div class="class-stats">
+                    <div class="tape" style="--tape-rot: 5deg;"></div>
+                    <h3 style="font-family: 'Caveat', cursive; font-size: 2rem; margin-bottom: 20px;">
+                        📊 Наш класс в цифрах
+                    </h3>
+                    <div class="stat-item">
+                        <span>Учеников:</span>
+                        <span class="stat-number">27</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Мальчиков:</span>
+                        <span class="stat-number">13</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Девочек:</span>
+                        <span class="stat-number">14</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Отличников:</span>
+                        <span class="stat-number">5 ⭐</span>
+                    </div>
+                   
+                </div>
+            </div>
+
+            <div class="notebook-divider">
+                <span>Наши новости</span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                <div class="sticky-note">
+                    📢 <strong> январь</strong><br>
+                    !
+                </div>
+                <div class="sticky-note pink" style="transform: rotate(2deg);">
+                    🎂 <strong>Поздравляем!</strong><br>
+                   
+                   С днём рождения Софью Р.!
+                </div>
+                <div class="sticky-note blue" style="transform: rotate(-1deg);">
+                    🏆 <strong>УРА!</strong><br>
+                    !
+                </div>
+                <div class="sticky-note green" style="transform: rotate(3deg);">
+                    📚 <strong>Напоминание</strong><br>
+                    Заканчивается триместр, подтяните успеваемость!
+                </div>
+            </div>
+        </section>
+
+        <!-- Страница с фотографиями -->
+        <section class="page" id="photos">
+            <h2 class="section-title">📸 Наши фотографии</h2>
+            
+            <h3 style="font-family: 'Caveat', cursive; font-size: 1.8rem; margin: 30px 0 20px; color: #4a5568;">
+                 2025
+            </h3>
+            
+            <div class="polaroid-grid">
+                <div class="polaroid" style="--rotation: -5deg;">
+                    <div class="tape" style="--tape-rot: -8deg;"></div>
+                    <img src="class.JPEG" alt="Класс">
+                    <div class="polaroid-caption">Наш дружный класс!</div>
+                </div>
+                
+                <div class="polaroid" style="--rotation: 3deg;">
+                    <div class="tape" style="--tape-rot: 12deg;"></div>
+                    <img src="theater.JPG" alt="Театр">
+                    <div class="polaroid-caption">В театре</div>
+                </div>
+                
+                <div class="polaroid" style="--rotation: -2deg;">
+                    <div class="tape" style="--tape-rot: -5deg;"></div>
+                    <img src="LessonPC.JPG" alt="ФК">
+                    <div class="polaroid-caption">На уроке ФК</div>
+                </div>
+                
+                <div class="polaroid" style="--rotation: 4deg;">
+                    <div class="tape" style="--tape-rot: 8deg;"></div>
+                    <img src="Rest.JPG" alt="Перемена">
+                    <div class="polaroid-caption">На перемене</div>
+                </div>
+            </div>
+
+            <h3 style="font-family: 'Caveat', cursive; font-size: 1.8rem; margin: 40px 0 20px; color: #4a5568;">
+                🎄 Новогодний праздник
+            </h3>
+            
+            <div class="polaroid-grid">
+                <div class="polaroid" style="--rotation: 2deg;">
+                    <div class="tape" style="--tape-rot: -3deg;"></div>
+                    <img src="HNY.JPG" alt="Новый год">
+                    <div class="polaroid-caption">Новогодняя ёлка 🎄</div>
+                </div>
+                
+                <div class="polaroid" style="--rotation: -4deg;">
+                    <div class="tape" style="--tape-rot: 10deg;"></div>
+                    <img src="NY.JPG" alt="Конкурсы">
+                    <div class="polaroid-caption">Конкурсы!</div>
+                </div>
+                
+                <div class="polaroid" style="--rotation: 3deg;">
+                    <div class="tape" style="--tape-rot: -7deg;"></div>
+                    <img src="Gift.jpg" alt="Подарки">
+                    <div class="polaroid-caption">Подарки!</div>
+                </div>
+                
+                <div class="polaroid" style="--rotation: -1deg;">
+                    <div class="tape" style="--tape-rot: 5deg;"></div>
+                    <img src="Super.JPG" alt="Весело">
+                    <div class="polaroid-caption">Весело провели время!</div>
+                </div>
+            </div>
+
+            <h3 style="font-family: 'Caveat', cursive; font-size: 1.8rem; margin: 40px 0 20px; color: #4a5568;">
+                ⚽ Спорт
+            </h3>
+            
+            <div class="polaroid-grid">
+                <div class="polaroid" style="--rotation: -3deg;">
+                    <div class="tape" style="--tape-rot: 7deg;"></div>
+                    <img src="gto.JPEG" alt="Спорт">
+                    <div class="polaroid-caption">Сдаем нормы ГТО!</div>
+                </div>
+                
+                <div class="polaroid" style="--rotation: 5deg;">
+                    <div class="tape" style="--tape-rot: -4deg;"></div>
+                    <img src="gto2.JPG" alt="Физкультура">
+                    <div class="polaroid-caption">Сдаем нормы ГТО!</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Страница с музыкой -->
+        <section class="page" id="music">
+            <h2 class="section-title">🎵 Наша музыка</h2>
+            
+            <div class="media-container">
+                <div class="tape" style="--tape-rot: -5deg;"></div>
+                <h3 style="font-family: 'Caveat', cursive; font-size: 2rem; margin-bottom: 25px; color: #2c5282;">
+                    🎧 Плейлист класса
+                </h3>
+                
+                <div class="playlist">
+                    <div class="track">
+                        <span class="track-icon">🎸</span>
+                        <div class="track-info">
+                            <h4>Шутливый гимн класса</h4>
+                            <p>Песня о нашем классе</p>
+                            <audio controls>
+                                <source src="Gimn.mp3" type="audio/mpeg">
+                            </audio>
+                        </div>
+                    </div>
+                    
+                    <div class="track">
+                        <span class="track-icon">🎹</span>
+                        <div class="track-info">
+                            <h4>День мам</h4>
+                            <p>Классика на все времена!</p>
+                            <audio controls>
+                                <source src="Mom.mp3" type="audio/mpeg">
+                            </audio>
+                        </div>
+                    </div>
+                    
+                    <div class="track">
+                        <span class="track-icon">🎤</span>
+                        <div class="track-info">
+                            <h4>О безопасности на каникулах</h4>
+                            <p>Безопасность это наш стиль!</p>
+                            <audio controls>
+                                <source src="SafeRap.mp3" type="audio/mpeg">
+                            </audio>
+                        </div>
+                    </div>
+                    
+                    <div class="track">
+                        <span class="track-icon">🎵</span>
+                        <div class="track-info">
+                            <h4>Наша новогодняя 🎄</h4>
+                            <p>Танцуй с нами! 💪</p>
+                            <audio controls>
+                                <source src="NY.mp3" type="audio/mpeg">
+                            </audio>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 30px;">
+                <div class="sticky-note" style="transform: rotate(-2deg);">
+                    🎼 <strong>Интересный факт!</strong><br><br>
+                    Кто из учеников нашего класса занимаются в музыкальной школе?
+                </div>
+                <div class="sticky-note pink" style="transform: rotate(1deg);">
+                    🎹 <strong>Наши музыканты:</strong><br><br>
+                    ? - фортепиано 🎹<br>
+                    ? - гитара 🎸<br>
+                    ? - скрипка 🎻
+                </div>
+            </div>
+        </section>
+
+        <!-- Страница с видео -->
+        <section class="page" id="video">
+            <h2 class="section-title">🎬 Наши видео</h2>
+            
+            <div class="video-grid">
+                <div class="video-card">
+                    <div class="tape tape-horizontal" style="--tape-rot: 5deg;"></div>
+                    <video controls poster="class.JPEG">
+                        <source src="5н.mp4" type="video/mp4">
+                    </video>
+                    <div class="video-caption">📹 Мы в 5 "н"</div>
+                </div>
+                
+                <div class="video-card">
+                    <div class="tape tape-horizontal" style="--tape-rot: -3deg;"></div>
+                    <video controls poster="Report.JPG">
+                        <source src="Report.mp4" type="video/mp4">
+                    </video>
+                    <div class="video-caption">Время талантов</div>
+                </div>
+                
+                <div class="video-card">
+                    <div class="tape tape-horizontal" style="--tape-rot: 4deg;"></div>
+                    <video controls poster="teatr.JPEG">
+                        <source src="teatr.mp4" type="video/mp4">
+                    </video>
+                    <div class="video-caption">🎭 Школьный спектакль</div>
+                </div>
+                
+                <div class="video-card">
+                    <div class="tape tape-horizontal" style="--tape-rot: -5deg;"></div>
+                    <video controls poster="intel.JPG">
+                        <source src="intel.mp4" type="video/mp4">
+                    </video>
+                    <div class="video-caption">Интеллектуальные игры!</div>
+                </div>
+            </div>
+
+            <div class="media-container" style="margin-top: 40px;">
+                <div class="tape" style="--tape-rot: 3deg;"></div>
+                <h3 style="font-family: 'Caveat', cursive; font-size: 2rem; margin-bottom: 25px; color: #2c5282;">
+                    📺 Видео с YouTube
+                </h3>
+                <p style="margin-bottom: 20px; color: #666;">
+                    Заблочили(((:
+                </p>
+                <div style="aspect-ratio: 16/9; max-width: 640px; background: #f0f0f0; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #666;">
+                    <div style="text-align: center;">
+                        <span style="font-size: 4rem;">📺</span>
+                        <p style="margin-top: 10px;">Место для YouTube видео</p>
+                        <code style="font-size: 0.9rem; color: #888;">&lt;iframe src="youtube-url"&gt;</code>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Страница с расписанием -->
+        <section class="page" id="schedule">
+            <h2 class="section-title">📅 Расписание уроков</h2>
+            
+            <div class="media-container">
+                <div class="tape" style="--tape-rot: -4deg;"></div>
+                
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th>№</th>
+                            <th>Понедельник</th>
+                            <th>Вторник</th>
+                            <th>Среда</th>
+                            <th>Четверг</th>
+                            <th>Пятница</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>1</strong></td>
+                            <td>Разговоры о важном</td>
+                            <td>📝 Русский язык</td>
+                            <td>📝 Русский язык</td>
+                            <td>📝 Русский язык</td>
+                            <td>📝 Русский язык</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2</strong></td>
+                            <td>📝 Русский язык</td>
+                            <td>🇬🇧 Англ. язык</td>
+                            <td>📝 Русский язык</td>
+                            <td>🔢 Математика</td>
+                            <td>🎵 Музыка</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3</strong></td>
+                            <td>🇬🇧 Англ. язык</td>
+                            <td>📜 История</td>
+                            <td>🇬🇧 Англ. язык</td>
+                            <td>📜 История</td>
+                            <td>🔢 Математика</td>
+                        </tr>
+                        <tr>
+                            <td><strong>4</strong></td>
+                            <td>🔢 Математика</td>
+                            <td>🌿 Биология</td>
+                            <td>🔢 Математика</td>
+                            <td>🎨 ИЗО</td>
+                            <td>⚽ Физкультура</td>
+                        </tr>
+                        <tr>
+                            <td><strong>5</strong></td>
+                            <td>🌍 Географияк</td>
+                            <td>🔢 Математика</td>
+                            <td>🔢 Математический практикум</td>
+                            <td>🔧 Технология</td>
+                            <td>📖 Литература</td>
+                        </tr>
+                        <tr>
+                            <td><strong>6</strong></td>
+                            <td>📜 История</td>
+                            <td>📖 Литература</td>
+                            <td>📖 Литература</td>
+                            <td>🔧 Технология</td>
+                            <td>🔢 Математический практикум</td>
+                        </tr>
+                        <tr>
+                            <td><strong>7</strong></td>
+                            <td>⚽ Физкультура</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 30px;">
+                <div class="sticky-note green">
+                    ⏰ <strong>Звонки:</strong><br><br>
+                    1 урок: 8:30 - 9:15<br>
+                    2 урок: 9:30 - 10:15<br>
+                    3 урок: 10:35 - 11:20<br>
+                    4 урок: 11:40 - 12:25<br>
+                    5 урок: 12:45 - 13:30<br>
+                    6 урок: 13:50 - 14:35
+                </div>
+                <div class="sticky-note blue" style="transform: rotate(2deg);">
+                    📌 <strong>Важно!</strong><br><br>
+                    Не забывайте сменную обувь! 👟<br><br>
+                    Форма одежды — деловой стиль 👔
+                </div>
+                <div class="sticky-note pink" style="transform: rotate(-1deg);">
+                    🍽️ <strong>Обед:</strong><br><br>
+                    Каждую перемену<br>
+                    Столовая ждёт! 🥗
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Футер -->
+    <footer>
+        <p class="footer-text">
+            Сделано специально для 6-Н класса
+        </p>
+        <p style="margin-top: 10px; color: #888;">
+             | 📱 Группа в telegram: telegram.org/class6n
+        </p>
+        <p style="margin-top: 20px; font-size: 2rem;">
+           
+        </p>
+    </footer>
+
+    <script>
+        // Навигация между страницами
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Убираем активный класс со всех кнопок и страниц
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                
+                // Добавляем активный класс нажатой кнопке и соответствующей странице
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.page).classList.add('active');
+                
+                // Прокручиваем наверх
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+
+        // Добавляем случайные повороты полароидам при загрузке
+        document.querySelectorAll('.polaroid').forEach(polaroid => {
+            if (!polaroid.style.getPropertyValue('--rotation')) {
+                const rotation = (Math.random() - 0.5) * 10;
+                polaroid.style.setProperty('--rotation', `${rotation}deg`);
+            }
+        });
+
+        // Интерактивность для стикеров
+        document.querySelectorAll('.sticky-note').forEach(note => {
+            note.addEventListener('mouseenter', () => {
+                note.style.transform = 'rotate(0deg) scale(1.05)';
+                note.style.zIndex = '10';
+            });
+            note.addEventListener('mouseleave', () => {
+                note.style.transform = '';
+                note.style.zIndex = '';
+            });
+        });
+    </script>
+</body>
+</html>
